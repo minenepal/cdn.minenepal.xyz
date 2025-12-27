@@ -1,4 +1,4 @@
-name: Build CDN Assets
+name: Build & Deploy CDN
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
       - "upload/**"
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
@@ -16,24 +16,36 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          persist-credentials: true
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install dependencies
+      - name: Install deps
         run: npm install
 
       - name: Build CDN
         run: npm run build
 
-      - name: Commit dist
-        run: |
-          git config user.name "cdn-bot"
-          git config user.email "cdn@github"
-          git add dist
-          git commit -m "build: optimized CDN assets" || exit 0
-          git push
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
