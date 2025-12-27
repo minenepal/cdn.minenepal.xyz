@@ -1,0 +1,15 @@
+{
+  "name": "minenepal-cdn",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.js"
+  },
+  "dependencies": {
+    "sharp": "^0.33.5",
+    "terser": "^5.31.6",
+    "clean-css": "^5.3.3",
+    "fs-extra": "^11.2.0",
+    "glob": "^10.4.5"
+  }
+}

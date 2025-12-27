@@ -1,0 +1,34 @@
+name: Build CDN Assets
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "upload/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build CDN
+        run: npm run build
+
+      - name: Commit dist
+        run: |
+          git config user.name "cdn-bot"
+          git config user.email "cdn@github"
+          git add dist
+          git commit -m "build: optimized CDN assets" || exit 0
+          git push
